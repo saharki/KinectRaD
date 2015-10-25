@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
 using System.Timers;
@@ -161,7 +160,9 @@ namespace Kinect_R_and_D
         }
 
     }
-
+    /// <summary>
+    /// Utilities for the project.
+    /// </summary>
     public class Utility
     {
         private static Timer aTimer;
