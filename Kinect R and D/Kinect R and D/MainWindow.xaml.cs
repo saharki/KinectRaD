@@ -27,7 +27,6 @@ namespace Kinect_R_and_D
         {
             InitializeComponent();
             Loaded += OnLoaded;
-            //SetTimer();
             Utility.SetTimer(15000);
         }
 
