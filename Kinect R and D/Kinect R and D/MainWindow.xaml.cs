@@ -4,12 +4,11 @@ using System.Windows;
 using System.Windows.Media;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
-using System;
 using System.Timers;
 
 
 namespace Kinect_R_and_D
-{
+{//test
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
