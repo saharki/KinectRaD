@@ -7,6 +7,7 @@ using Microsoft.Kinect.Toolkit;
 using System;
 using System.Timers;
 
+
 namespace Kinect_R_and_D
 {
     /// <summary>
