@@ -8,7 +8,7 @@ using System.Timers;
 
 
 namespace Kinect_R_and_D
-{//test
+{
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -18,7 +18,6 @@ namespace Kinect_R_and_D
         private KinectSensor kinect;
         private Skeleton[] skeletonData;
         private string filePath = @"Step0.csv";
-        private static Timer aTimer;
 
 
         /// <summary>
@@ -29,22 +28,12 @@ namespace Kinect_R_and_D
         {
             InitializeComponent();
             Loaded += OnLoaded;
-            SetTimer();
+            //SetTimer();
+            Utility.SetTimer(15000);
         }
 
-        private void SetTimer()
-        {
-            // Create a timer with a two second interval.
-            aTimer = new System.Timers.Timer(20000);
-            // Hook up the Elapsed event for the timer. 
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = true;
-            aTimer.Enabled = true;
-        }
-        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
-        {
-            System.Environment.Exit(1);
-        }
+        
+      
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             //Initialize sensor UI helper called sensorChooser and start the sensor.
@@ -171,5 +160,24 @@ namespace Kinect_R_and_D
                 kinectRegion.KinectSensor = e.NewSensor;
         }
 
+    }
+
+    public class Utility
+    {
+        private static Timer aTimer;
+
+        public static void SetTimer(int time)
+        {
+            // Create a timer with a two second interval.
+            aTimer = new System.Timers.Timer(time);
+            // Hook up the Elapsed event for the timer. 
+            aTimer.Elapsed += OnTimedEvent;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
+        }
+        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            System.Environment.Exit(1);
+        }
     }
 }
