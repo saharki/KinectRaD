@@ -144,7 +144,7 @@ namespace Kinect_R_and_D
                     {
                         e.NewSensor.DepthStream.Range = DepthRange.Default;
                         e.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
-                        e.NewSensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
+                        e.NewSensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;
                     }
                     catch (InvalidOperationException)
                     {
