@@ -17,6 +17,8 @@ namespace Kinect_R_and_D
         private KinectSensor kinect;
         private Skeleton[] skeletonData;
         private string filePath = @"Step0.csv";
+        private string CSVFileRow;
+        private int CSVFileRowCount; //To optimize the write operation. 
 
 
         /// <summary>
@@ -30,8 +32,8 @@ namespace Kinect_R_and_D
             Utility.SetTimer(15000);
         }
 
-        
-      
+
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             //Initialize sensor UI helper called sensorChooser and start the sensor.
@@ -61,29 +63,34 @@ namespace Kinect_R_and_D
             {
                 if (skeletonFrame != null && this.skeletonData != null) // check that a frame is available.
                 {
-                    string str = "";
                     skeletonFrame.CopySkeletonDataTo(this.skeletonData); // get the skeletal information in this frame.
 
-                    str += skeletonData[0].Joints[JointType.Head].Position.X.ToString() +
+                    CSVFileRow += skeletonData[0].Joints[JointType.Head].Position.X.ToString() +
                           "," + skeletonData[0].Joints[JointType.Head].Position.Y.ToString() +
                             "," + skeletonData[0].Joints[JointType.Head].Position.Z.ToString();
 
-                    str += "," + skeletonData[0].Joints[JointType.HandLeft].Position.X.ToString() +
+                    CSVFileRow += "," + skeletonData[0].Joints[JointType.HandLeft].Position.X.ToString() +
                          "," + skeletonData[0].Joints[JointType.HandLeft].Position.Y.ToString() +
                          "," + skeletonData[0].Joints[JointType.HandLeft].Position.Z.ToString();
 
-                    str += "," + skeletonData[0].Joints[JointType.WristLeft].Position.X.ToString() +
+                    CSVFileRow += "," + skeletonData[0].Joints[JointType.WristLeft].Position.X.ToString() +
                          "," + skeletonData[0].Joints[JointType.WristLeft].Position.Y.ToString() +
                          "," + skeletonData[0].Joints[JointType.WristLeft].Position.Z.ToString();
 
-                    str += "," + skeletonData[0].Joints[JointType.HandRight].Position.X.ToString() +
+                    CSVFileRow += "," + skeletonData[0].Joints[JointType.HandRight].Position.X.ToString() +
                          "," + skeletonData[0].Joints[JointType.HandRight].Position.Y.ToString() +
                          "," + skeletonData[0].Joints[JointType.HandRight].Position.Z.ToString();
 
-                    str += "," + skeletonData[0].Joints[JointType.WristRight].Position.X.ToString() +
+                    CSVFileRow += "," + skeletonData[0].Joints[JointType.WristRight].Position.X.ToString() +
                          "," + skeletonData[0].Joints[JointType.WristRight].Position.Y.ToString() +
                          "," + skeletonData[0].Joints[JointType.WristRight].Position.Z.ToString() + System.Environment.NewLine;
-                    File.AppendAllText(filePath, str);
+                    //Write to the file every 5 frames, for optimization.
+                    if (++CSVFileRowCount == 5)
+                    {
+                        File.AppendAllText(filePath, CSVFileRow);
+                        CSVFileRowCount = 0;
+                        CSVFileRow = "";
+                    }
 
                     // Console.Write("|X7: " + skeletonData[0].Joints[JointType.KneeLeft].Position.X.ToString() +
                     //" Y7: " + skeletonData[0].Joints[JointType.KneeLeft].Position.Y.ToString() +
