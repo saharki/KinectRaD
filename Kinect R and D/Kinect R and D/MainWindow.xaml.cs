@@ -4,23 +4,25 @@ using System.Windows;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
 using System.Timers;
-
+using Kinect_R_and_D.Record;
 
 namespace Kinect_R_and_D
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+
+
     public partial class MainWindow : Window
     {
         private KinectSensorChooser sensorChooser;
         private KinectSensor kinect;
-        private Skeleton[] skeletonData;
-        private string filePath = @"Step0.csv";
-        private string CSVFileRow;
-        private int CSVFileRowCount; //To optimize the write operation. 
+        private SkeletonPositionTracking skeleonTracker;
+        private const string fileName = "ColorVideo.wmv";
 
-
+     //   private BinaryWriter colorWriter= new BinaryWriter(File.Open(fileName, FileMode.Create));
+        private ColorRecorder colorRec; 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -30,13 +32,14 @@ namespace Kinect_R_and_D
             InitializeComponent();
             Loaded += OnLoaded;
             //SetTimer();
-            Utility.SetTimer(15000);
+           // Utility.SetTimer(15000);
         }
 
 
-
+        
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+
             //Initialize sensor UI helper called sensorChooser and start the sensor.
             this.sensorChooser = new KinectSensorChooser();
             this.sensorChooser.KinectChanged += SensorChooserOnKinectChanged;
@@ -44,73 +47,29 @@ namespace Kinect_R_and_D
             this.sensorChooser.Start();
             this.kinect = this.sensorChooser.Kinect;
             // Allocate and start the skeleton Data stream.
-            skeletonData = new Skeleton[kinect.SkeletonStream.FrameSkeletonArrayLength];
+            skeleonTracker = new SkeletonPositionTracking(kinect.SkeletonStream.FrameSkeletonArrayLength);
             this.kinect.SkeletonStream.Enable();
+            this.kinect.ColorStream.Enable();
             // Get Ready for Skeleton Ready Events.
-            this.kinect.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(kinectSkeletonFrameReady);
+            this.kinect.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(skeleonTracker.kinectSkeletonFrameReady);
+         //   this.kinect.ColorFrameReady += new EventHandler<ColorImageFrameReadyEventArgs>(ColorImageFrameReady);
             this.kinect.Start(); // Start Kinect sensor
             //Create the file for CSV values of the Joints.
             //ToDo: add the kinectRegion on load.
             //if (!error)
             //    kinectRegion.KinectSensor = e.NewSensor;
-            string headline = "Head X, Head Y, Head Z, HandLeft X, HandLeft Y, HandLeft Z, WristLeft X, WristLeft Y," +
-              "WristLeft Z, HandRight X, HandRight Y, HandRight Z, WristRight X, WristRight Y, WristRight Z" + System.Environment.NewLine;
-            File.WriteAllText(filePath, headline);
+
+      //      colorRec = new ColorRecorder(colorWriter);
+
         }
 
-        private void kinectSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
+
+        private void ColorImageFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame()) // Open the Skeleton frame.
-            {
-                if (skeletonFrame != null && this.skeletonData != null) // check that a frame is available.
-                {
-                    skeletonFrame.CopySkeletonDataTo(this.skeletonData); // get the skeletal information in this frame.
-
-                    CSVFileRow += skeletonData[0].Joints[JointType.Head].Position.X.ToString() +
-                          "," + skeletonData[0].Joints[JointType.Head].Position.Y.ToString() +
-                            "," + skeletonData[0].Joints[JointType.Head].Position.Z.ToString();
-
-                    CSVFileRow += "," + skeletonData[0].Joints[JointType.HandLeft].Position.X.ToString() +
-                         "," + skeletonData[0].Joints[JointType.HandLeft].Position.Y.ToString() +
-                         "," + skeletonData[0].Joints[JointType.HandLeft].Position.Z.ToString();
-
-                    CSVFileRow += "," + skeletonData[0].Joints[JointType.WristLeft].Position.X.ToString() +
-                         "," + skeletonData[0].Joints[JointType.WristLeft].Position.Y.ToString() +
-                         "," + skeletonData[0].Joints[JointType.WristLeft].Position.Z.ToString();
-
-                    CSVFileRow += "," + skeletonData[0].Joints[JointType.HandRight].Position.X.ToString() +
-                         "," + skeletonData[0].Joints[JointType.HandRight].Position.Y.ToString() +
-                         "," + skeletonData[0].Joints[JointType.HandRight].Position.Z.ToString();
-
-                    CSVFileRow += "," + skeletonData[0].Joints[JointType.WristRight].Position.X.ToString() +
-                         "," + skeletonData[0].Joints[JointType.WristRight].Position.Y.ToString() +
-                         "," + skeletonData[0].Joints[JointType.WristRight].Position.Z.ToString() + System.Environment.NewLine;
-                    //Write to the file every 5 frames, for optimization.
-                    if (++CSVFileRowCount == 5)
-                    {
-                        File.AppendAllText(filePath, CSVFileRow);
-                        CSVFileRowCount = 0;
-                        CSVFileRow = "";
-                    }
-
-                    // Console.Write("|X7: " + skeletonData[0].Joints[JointType.KneeLeft].Position.X.ToString() +
-                    //" Y7: " + skeletonData[0].Joints[JointType.KneeLeft].Position.Y.ToString() +
-                    //" Z7: " + skeletonData[0].Joints[JointType.KneeLeft].Position.Z.ToString());
-
-                    // Console.Write("|X8: " + skeletonData[0].Joints[JointType.FootLeft].Position.X.ToString() +
-                    //" Y8: " + skeletonData[0].Joints[JointType.FootLeft].Position.Y.ToString() +
-                    //" Z8: " + skeletonData[0].Joints[JointType.FootLeft].Position.Z.ToString());
-
-                    // Console.Write("|X9: " + skeletonData[0].Joints[JointType.KneeRight].Position.X.ToString() +
-                    //  " Y9: " + skeletonData[0].Joints[JointType.KneeRight].Position.Y.ToString() +
-                    //" Z9: " + skeletonData[0].Joints[JointType.KneeRight].Position.Z.ToString());
-
-                    // Console.WriteLine("|X10: " + skeletonData[0].Joints[JointType.FootRight].Position.X.ToString() +
-                    //" Y10: " + skeletonData[0].Joints[JointType.FootRight].Position.Y.ToString() +
-                    //" Z10: " + skeletonData[0].Joints[JointType.FootRight].Position.Z.ToString());
-                }
-            }
+           if(kinect!=null && e!=null)
+           colorRec.RecordToBitmap(e.OpenColorImageFrame(),kinect);
         }
+
 
         private void SensorChooserOnKinectChanged(object sender, KinectChangedEventArgs e)
         {
@@ -125,6 +84,7 @@ namespace Kinect_R_and_D
                     e.OldSensor.SkeletonStream.EnableTrackingInNearRange = false;
                     e.OldSensor.DepthStream.Disable();
                     e.OldSensor.SkeletonStream.Disable();
+                    e.OldSensor.ColorStream.Disable();
                 }
                 catch (InvalidOperationException)
                 {
@@ -140,12 +100,14 @@ namespace Kinect_R_and_D
                 {
                     e.NewSensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
                     e.NewSensor.SkeletonStream.Enable();
+                    e.NewSensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
 
                     try
                     {
                         e.NewSensor.DepthStream.Range = DepthRange.Default;
                         e.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
                         e.NewSensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
+                        
                     }
                     catch (InvalidOperationException)
                     {
@@ -188,4 +150,8 @@ namespace Kinect_R_and_D
             System.Environment.Exit(1);
         }
     }
+  
+
+
 }
+
