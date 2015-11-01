@@ -5,6 +5,8 @@ using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
 using System.Timers;
 using Kinect_R_and_D.Record;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace Kinect_R_and_D
 {
@@ -20,8 +22,10 @@ namespace Kinect_R_and_D
         private KinectSensor kinect;
         private SkeletonPositionTracking skeleonTracker;
         private const string fileName = "ColorVideo.wmv";
-        //   private BinaryWriter colorWriter= new BinaryWriter(File.Open(fileName, FileMode.Create));
-        private ColorRecorder colorRec;
+
+        private ColorRecorder colorDisplay;
+
+
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -41,8 +45,7 @@ namespace Kinect_R_and_D
 
             //Initialize sensor UI helper called sensorChooser and start the sensor.
             this.sensorChooser = new KinectSensorChooser();
-            this.colorRec = new ColorRecorder();
-            this.sensorChooser.KinectChanged += SensorChooserOnKinectChanged;
+            this.sensorChooser.KinectChanged += this.SensorChooserOnKinectChanged;
             this.sensorChooserUi.KinectSensorChooser = this.sensorChooser;
             this.sensorChooser.Start();
             this.kinect = this.sensorChooser.Kinect;
@@ -50,23 +53,31 @@ namespace Kinect_R_and_D
             // Allocate and start the skeleton Data stream.
             this.skeleonTracker = new SkeletonPositionTracking(kinect.SkeletonStream.FrameSkeletonArrayLength);
             this.kinect.SkeletonStream.Enable();
-            this.kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-            this.kinect.ColorFrameReady += colorRec.ColorImageReady;
 
             // Get Ready for Skeleton Ready Events.
             this.kinect.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(skeleonTracker.kinectSkeletonFrameReady);
-            this.kinect.ColorFrameReady += new EventHandler<Microsoft.Kinect.ColorImageFrameReadyEventArgs>(ColorImageFrameReady_handler);
 
-            this.kinect.Start(); 
+            this.colorDisplay = new ColorRecorder();
 
+            // Turn on the color stream to receive color frames
+            this.kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+
+            // Allocate space to put the pixels we'll receive
+            colorDisplay.colorPixels = new byte[this.kinect.ColorStream.FramePixelDataLength];
+
+            // This is the bitmap we'll display on-screen
+            colorDisplay.colorBitmap = new WriteableBitmap(this.kinect.ColorStream.FrameWidth, this.kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+
+            // Set the image we display to point to the bitmap where we'll put the image data
+            this.Image.Source = colorDisplay.colorBitmap;
+
+            // Add an event handler to be called whenever there is new color frame data
+            this.kinect.ColorFrameReady += this.colorDisplay.SensorColorFrameReady;
+
+            this.kinect.Start();
         }
 
 
-
-        public void ColorImageFrameReady_handler(object sender, Microsoft.Kinect.ColorImageFrameReadyEventArgs e)
-        {
-            Camera.Source = colorRec.CameraSource;
-        }
 
         private void SensorChooserOnKinectChanged(object sender, KinectChangedEventArgs e)
         {

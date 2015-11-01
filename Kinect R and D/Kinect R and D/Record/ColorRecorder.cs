@@ -14,43 +14,33 @@ namespace Kinect_R_and_D.Record
 {
     public class ColorRecorder
     {
-        private static readonly int Bgr32BytesPerPixel = (PixelFormats.Bgr32.BitsPerPixel + 7) / 8;
-        private byte[] pixelData;
-        public WriteableBitmap CameraSource= new WriteableBitmap(600, 400, 300,
-       300, PixelFormats.Bgra32, null);
+        /// <summary>
+        /// Bitmap that will hold color information
+        /// </summary>
+        public WriteableBitmap colorBitmap;
 
-     
+        /// <summary>
+        /// Intermediate storage for the color data received from the camera
+        /// </summary>
+        public byte[] colorPixels;
 
-        public void ColorImageReady(object sender, ColorImageFrameReadyEventArgs e)
+        public void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
-            bool receivedData = false;
-            using (ColorImageFrame imageFrame = e.OpenColorImageFrame())
+            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
             {
-                if (imageFrame != null)
+                if (colorFrame != null)
                 {
+                    // Copy the pixel data from the image to a temporary array
+                    colorFrame.CopyPixelDataTo(this.colorPixels);
 
-                    if (pixelData == null)
-                    {
-                        this.pixelData = new byte[imageFrame.PixelDataLength];
-                    }
-
-                    imageFrame.CopyPixelDataTo(this.pixelData);
-                    receivedData = true;
-
-                    // A WriteableBitmap is a WPF construct that enables resetting the Bits of the image.
-                    // This is more efficient than creating a new Bitmap every frame.
-                    if (receivedData)
-                    {
-
-
-                        this.CameraSource.WritePixels( new Int32Rect(0, 0, imageFrame.Width, imageFrame.Height),
-                            this.pixelData,imageFrame.Width * Bgr32BytesPerPixel,0);
-                    }
-
+                    // Write the pixel data into our bitmap
+                    this.colorBitmap.WritePixels(
+                        new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
+                        this.colorPixels,
+                        this.colorBitmap.PixelWidth * sizeof(int),
+                        0);
                 }
             }
         }
-
-
     }
 }
