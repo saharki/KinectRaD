@@ -9,52 +9,48 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+
 namespace Kinect_R_and_D.Record
 {
-    class ColorRecorder
+    public class ColorRecorder
     {
-        DateTime referenceTime;
-        private WriteableBitmap colorBitmap;
-        private byte[] colorPixels;
-        internal ColorRecorder(WriteableBitmap writer)
+        private static readonly int Bgr32BytesPerPixel = (PixelFormats.Bgr32.BitsPerPixel + 7) / 8;
+        private byte[] pixelData;
+        public WriteableBitmap CameraSource= new WriteableBitmap(600, 400, 300,
+       300, PixelFormats.Bgra32, null);
+
+     
+
+        public void ColorImageReady(object sender, ColorImageFrameReadyEventArgs e)
         {
-           // this.writer = writer;
-            referenceTime = DateTime.Now;
-        }
-        public void RecordToBitmap(ColorImageFrame colorFrame, KinectSensor kinect)
-        {
-            if (colorFrame != null)
+            bool receivedData = false;
+            using (ColorImageFrame imageFrame = e.OpenColorImageFrame())
             {
-                colorFrame.CopyPixelDataTo(this.colorPixels);
-                this.colorBitmap = new WriteableBitmap(kinect.ColorStream.FrameWidth, kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
-                this.colorBitmap.WritePixels(
-                new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                  this.colorPixels,
-                this.colorBitmap.PixelWidth * sizeof(int), 0);
+                if (imageFrame != null)
+                {
+
+                    if (pixelData == null)
+                    {
+                        this.pixelData = new byte[imageFrame.PixelDataLength];
+                    }
+
+                    imageFrame.CopyPixelDataTo(this.pixelData);
+                    receivedData = true;
+
+                    // A WriteableBitmap is a WPF construct that enables resetting the Bits of the image.
+                    // This is more efficient than creating a new Bitmap every frame.
+                    if (receivedData)
+                    {
+
+
+                        this.CameraSource.WritePixels( new Int32Rect(0, 0, imageFrame.Width, imageFrame.Height),
+                            this.pixelData,imageFrame.Width * Bgr32BytesPerPixel,0);
+                    }
+
+                }
             }
         }
-       /* public void Record(ColorImageFrame frame)
-        {
-            // Header
-            writer.WritePixels()
-            writer.Write((int)KinectRecordOptions.Color);
 
-            // Data
-            TimeSpan timeSpan = DateTime.Now.Subtract(referenceTime);
-            referenceTime = DateTime.Now;
-            writer.Write((long)timeSpan.TotalMilliseconds);
-            writer.Write(frame.BytesPerPixel);
-            writer.Write((int)frame.Format);
-            writer.Write(frame.Width);
-            writer.Write(frame.Height);
 
-            writer.Write(frame.FrameNumber);
-
-            // Bytes
-            writer.Write(frame.PixelDataLength);
-            byte[] bytes = new byte[frame.PixelDataLength];
-            frame.CopyPixelDataTo(bytes);
-            writer.Write(bytes);
-        }*/
     }
 }

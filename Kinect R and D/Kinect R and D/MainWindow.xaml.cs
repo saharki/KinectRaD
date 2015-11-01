@@ -20,9 +20,8 @@ namespace Kinect_R_and_D
         private KinectSensor kinect;
         private SkeletonPositionTracking skeleonTracker;
         private const string fileName = "ColorVideo.wmv";
-
-     //   private BinaryWriter colorWriter= new BinaryWriter(File.Open(fileName, FileMode.Create));
-        private ColorRecorder colorRec; 
+        //   private BinaryWriter colorWriter= new BinaryWriter(File.Open(fileName, FileMode.Create));
+        private ColorRecorder colorRec;
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -32,44 +31,42 @@ namespace Kinect_R_and_D
             InitializeComponent();
             Loaded += OnLoaded;
             //SetTimer();
-           // Utility.SetTimer(15000);
+            // Utility.SetTimer(15000);
         }
 
 
-        
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
 
             //Initialize sensor UI helper called sensorChooser and start the sensor.
             this.sensorChooser = new KinectSensorChooser();
+            this.colorRec = new ColorRecorder();
             this.sensorChooser.KinectChanged += SensorChooserOnKinectChanged;
             this.sensorChooserUi.KinectSensorChooser = this.sensorChooser;
             this.sensorChooser.Start();
             this.kinect = this.sensorChooser.Kinect;
+
             // Allocate and start the skeleton Data stream.
-            skeleonTracker = new SkeletonPositionTracking(kinect.SkeletonStream.FrameSkeletonArrayLength);
+            this.skeleonTracker = new SkeletonPositionTracking(kinect.SkeletonStream.FrameSkeletonArrayLength);
             this.kinect.SkeletonStream.Enable();
-            this.kinect.ColorStream.Enable();
+            this.kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+            this.kinect.ColorFrameReady += colorRec.ColorImageReady;
+
             // Get Ready for Skeleton Ready Events.
             this.kinect.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(skeleonTracker.kinectSkeletonFrameReady);
-         //   this.kinect.ColorFrameReady += new EventHandler<ColorImageFrameReadyEventArgs>(ColorImageFrameReady);
-            this.kinect.Start(); // Start Kinect sensor
-            //Create the file for CSV values of the Joints.
-            //ToDo: add the kinectRegion on load.
-            //if (!error)
-            //    kinectRegion.KinectSensor = e.NewSensor;
+            this.kinect.ColorFrameReady += new EventHandler<Microsoft.Kinect.ColorImageFrameReadyEventArgs>(ColorImageFrameReady_handler);
 
-      //      colorRec = new ColorRecorder(colorWriter);
+            this.kinect.Start(); 
 
         }
 
 
-        private void ColorImageFrameReady(object sender, ColorImageFrameReadyEventArgs e)
+
+        public void ColorImageFrameReady_handler(object sender, Microsoft.Kinect.ColorImageFrameReadyEventArgs e)
         {
-           if(kinect!=null && e!=null)
-           colorRec.RecordToBitmap(e.OpenColorImageFrame(),kinect);
+            Camera.Source = colorRec.CameraSource;
         }
-
 
         private void SensorChooserOnKinectChanged(object sender, KinectChangedEventArgs e)
         {
@@ -107,7 +104,7 @@ namespace Kinect_R_and_D
                         e.NewSensor.DepthStream.Range = DepthRange.Default;
                         e.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
                         e.NewSensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
-                        
+
                     }
                     catch (InvalidOperationException)
                     {
@@ -150,7 +147,7 @@ namespace Kinect_R_and_D
             System.Environment.Exit(1);
         }
     }
-  
+
 
 
 }
