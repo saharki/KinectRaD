@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Kinect;
-using Microsoft.Kinect.Toolkit;
-using System.IO;
+﻿using Microsoft.Kinect;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Windows.Media;
 
 namespace Kinect_R_and_D.Record
 {
@@ -17,12 +9,14 @@ namespace Kinect_R_and_D.Record
         /// <summary>
         /// Bitmap that will hold color information
         /// </summary>
-        public WriteableBitmap colorBitmap;
+        private WriteableBitmap colorBitmap;
 
         /// <summary>
         /// Intermediate storage for the color data received from the camera
         /// </summary>
-        public byte[] colorPixels;
+        private byte[] colorPixels;
+
+
 
         public void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
@@ -40,6 +34,30 @@ namespace Kinect_R_and_D.Record
                         this.colorBitmap.PixelWidth * sizeof(int),
                         0);
                 }
+            }
+        }
+
+        public byte[] ColorPixels
+        {
+            get
+            {
+                return this.colorPixels;
+            }
+            set
+            {
+                this.colorPixels = value;
+            }
+        }
+
+        public WriteableBitmap ColorBitmap
+        {
+            get
+            {
+                return this.colorBitmap;
+            }
+            set
+            {
+                this.colorBitmap = value;
             }
         }
     }
