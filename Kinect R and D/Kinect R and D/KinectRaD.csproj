@@ -73,6 +73,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Record\DepthRecoder.cs" />
     <Compile Include="Record\KinectRecordOptions.cs" />
     <Compile Include="Record\ColorRecorder.cs" />
     <Compile Include="Record\SkeletonPositionTracking.cs" />
@@ -114,7 +115,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

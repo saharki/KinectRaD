@@ -24,15 +24,15 @@ namespace Kinect_R_and_D.Record
         /// <summary>
         /// Intermediate storage for the color data received from the camera
         /// </summary>
-        public byte[][] colorPixels = new byte[BUFFERSIZE][];
+        public byte[][] colorPixels;
         private int framesNum = 0;
 
         public ColorRecorder(KinectSensor kinect)
-        {          
-        
+        {
+            colorPixels = new byte[BUFFERSIZE][];
             // Allocate space to put the pixels we'll receive
             for (int i = 0; i < BUFFERSIZE; i++)
-            this.colorPixels[BUFFERSIZE] = new byte[kinect.ColorStream.FramePixelDataLength];
+            this.colorPixels[i] = new byte[kinect.ColorStream.FramePixelDataLength];
             // This is the bitmap we'll display on-screen
             this.colorBitmap = new WriteableBitmap(kinect.ColorStream.FrameWidth, kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
 
@@ -48,7 +48,7 @@ namespace Kinect_R_and_D.Record
 
                     if(0 == framesNum % BUFFERSIZE) //if buffer is full - empty buffer to file\s
                     {
-                        for (int i = 0; i < BUFFERSIZE; i++)
+                      /*  for (int i = 0; i < BUFFERSIZE; i++)
                         {
                             using (var ms = new MemoryStream(colorPixels[i]))
                             {
@@ -56,7 +56,7 @@ namespace Kinect_R_and_D.Record
 
                                 image.Save(@"images\image" + i + ".jpg");
                             }
-                        }
+                        }*/
                         framesNum=1;
                     }
                      
@@ -66,11 +66,25 @@ namespace Kinect_R_and_D.Record
                     // Write the pixel data into our bitmap
                     this.colorBitmap.WritePixels(
                         new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                        this.colorPixels,
+                        this.colorPixels[framesNum],
                         this.colorBitmap.PixelWidth * sizeof(int),
                         0);
                 }
             }
         }
+
+
+        public WriteableBitmap ColorBitmap
+        {
+            get
+            {
+                return this.colorBitmap;
+            }
+            set
+            {
+                this.colorBitmap = value;
+            }
+        }
+
     }
 }
