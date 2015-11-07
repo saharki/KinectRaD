@@ -9,6 +9,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Drawing;
+
 
 namespace Kinect_R_and_D.Record
 {
@@ -19,22 +21,23 @@ namespace Kinect_R_and_D.Record
         /// <summary>
         /// Bitmap that will hold color information
         /// </summary>
-        public WriteableBitmap colorBitmap;
+        private WriteableBitmap[] colorBitmap;
 
         /// <summary>
         /// Intermediate storage for the color data received from the camera
         /// </summary>
-        public byte[][] colorPixels;
+        public byte[] colorPixels;
         private int framesNum = 0;
-
+        private KinectSensor kinect;
         public ColorRecorder(KinectSensor kinect)
         {
-            colorPixels = new byte[BUFFERSIZE][];
+            this.kinect = kinect;
             // Allocate space to put the pixels we'll receive
+            this.colorPixels = new byte[kinect.ColorStream.FramePixelDataLength];
+            colorBitmap = new WriteableBitmap[BUFFERSIZE];
+            // This is the bitmap we'll display on-screen.
             for (int i = 0; i < BUFFERSIZE; i++)
-            this.colorPixels[i] = new byte[kinect.ColorStream.FramePixelDataLength];
-            // This is the bitmap we'll display on-screen
-            this.colorBitmap = new WriteableBitmap(kinect.ColorStream.FrameWidth, kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+            this.colorBitmap[i] = new WriteableBitmap(kinect.ColorStream.FrameWidth, kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
 
         }
 
@@ -44,46 +47,68 @@ namespace Kinect_R_and_D.Record
             {
                 if (colorFrame != null)
                 {
-                    framesNum++;
-
-                    if(0 == framesNum % BUFFERSIZE) //if buffer is full - empty buffer to file\s
+                    if(0 == (framesNum+1) % BUFFERSIZE) //if buffer is full - empty buffer to file\s
                     {
-                      /*  for (int i = 0; i < BUFFERSIZE; i++)
+                        for (int i = framesNum-BUFFERSIZE+1; i < framesNum+1; i++)
                         {
-                            using (var ms = new MemoryStream(colorPixels[i]))
-                            {
-                                System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
+                            CreateThumbnail(@"images\color"+i+".bmp", ConvertWriteableBitmapToBitmapImage(colorBitmap[i%BUFFERSIZE]));
+                        }
 
-                                image.Save(@"images\image" + i + ".jpg");
-                            }
-                        }*/
-                        framesNum=1;
                     }
                      
                     // Copy the pixel data from the image to a temporary array
-                    colorFrame.CopyPixelDataTo(this.colorPixels[framesNum]);
+                    colorFrame.CopyPixelDataTo(this.colorPixels);
 
                     // Write the pixel data into our bitmap
-                    this.colorBitmap.WritePixels(
-                        new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                        this.colorPixels[framesNum],
-                        this.colorBitmap.PixelWidth * sizeof(int),
-                        0);
+
+                    this.colorBitmap[framesNum % BUFFERSIZE].WritePixels(
+                            new Int32Rect(0, 0, this.colorBitmap[framesNum % BUFFERSIZE].PixelWidth, this.colorBitmap[framesNum % BUFFERSIZE].PixelHeight),
+                            this.colorPixels,
+                            this.colorBitmap[framesNum % BUFFERSIZE].PixelWidth * sizeof(int),
+                            0);
+                        framesNum++;
                 }
             }
         }
 
+        void CreateThumbnail(string filename, BitmapSource image5)
+        {
+            if (filename != string.Empty)
+            {
+                using (FileStream stream5 = new FileStream(filename, FileMode.Create))
+                {
+                    PngBitmapEncoder encoder5 = new PngBitmapEncoder();
+                    encoder5.Frames.Add(BitmapFrame.Create(image5));
+                    encoder5.Save(stream5);
+                    stream5.Close();
+                }
+            }
+        }
+
+        private BitmapImage ConvertWriteableBitmapToBitmapImage(WriteableBitmap wbm)
+        {
+            BitmapImage bmImage = new BitmapImage();
+            using (MemoryStream stream = new MemoryStream())
+            {
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(wbm));
+                encoder.Save(stream);
+                bmImage.BeginInit();
+                bmImage.CacheOption = BitmapCacheOption.OnLoad;
+                bmImage.StreamSource = stream;
+                bmImage.EndInit();
+                bmImage.Freeze();
+            }
+            return bmImage;
+        }
 
         public WriteableBitmap ColorBitmap
         {
             get
             {
-                return this.colorBitmap;
+                return this.colorBitmap[framesNum%BUFFERSIZE];
             }
-            set
-            {
-                this.colorBitmap = value;
-            }
+
         }
 
     }
