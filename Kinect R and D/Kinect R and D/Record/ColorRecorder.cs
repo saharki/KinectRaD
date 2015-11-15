@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Drawing;
-
+using System.ComponentModel;
 
 namespace Kinect_R_and_D.Record
 {
@@ -47,14 +47,14 @@ namespace Kinect_R_and_D.Record
             {
                 if (colorFrame != null)
                 {
-                    if(0 == (framesNum+1) % BUFFERSIZE) //if buffer is full - empty buffer to file\s
+                   /* if(0 == (framesNum+1) % BUFFERSIZE) //if buffer is full - empty buffer to file\s
                     {
                         for (int i = framesNum-BUFFERSIZE+1; i < framesNum+1; i++)
                         {
                             CreateThumbnail(@"images\color"+i+".bmp", ConvertWriteableBitmapToBitmapImage(colorBitmap[i%BUFFERSIZE]));
                         }
 
-                    }
+                    }*/
                      
                     // Copy the pixel data from the image to a temporary array
                     colorFrame.CopyPixelDataTo(this.colorPixels);
@@ -67,6 +67,40 @@ namespace Kinect_R_and_D.Record
                             this.colorBitmap[framesNum % BUFFERSIZE].PixelWidth * sizeof(int),
                             0);
                         framesNum++;
+                }
+            }
+        }
+
+        public void SensorColorFrameReady2(object sender, ColorImageFrameReadyEventArgs e)
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += new DoWorkEventHandler(savePic);
+            bw.RunWorkerAsync(e);
+        }
+
+   
+        private void savePic(object sender, DoWorkEventArgs e)
+        {
+            using (ColorImageFrame colorFrame = ((ColorImageFrameReadyEventArgs)(e.Argument)).OpenColorImageFrame())
+            {
+                if (colorFrame != null)
+                {
+
+                    byte[] cp = new byte[kinect.ColorStream.FramePixelDataLength];
+                    WriteableBitmap cb = new WriteableBitmap(this.kinect.ColorStream.FrameWidth, this.kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+                    // Copy the pixel data from the image to a temporary array
+                    colorFrame.CopyPixelDataTo(cp);
+
+                    // Write the pixel data into our bitmap
+
+                    cb.WritePixels(
+                             new Int32Rect(0, 0, cb.PixelWidth, cb.PixelHeight),
+                            cp,
+                             cb.PixelWidth * sizeof(int),
+                             0);
+
+                    CreateThumbnail(@"images\color" + framesNum + ".bmp", ConvertWriteableBitmapToBitmapImage(cb));
+                    framesNum++;
                 }
             }
         }
