@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Drawing;
 using System.ComponentModel;
+using AForge.Video.VFW;
 
 namespace Kinect_R_and_D.Record
 {
@@ -47,14 +48,15 @@ namespace Kinect_R_and_D.Record
             {
                 if (colorFrame != null)
                 {
-                   /* if(0 == (framesNum+1) % BUFFERSIZE) //if buffer is full - empty buffer to file\s
+                    if(0 == (framesNum+1) % BUFFERSIZE) //if buffer is full - empty buffer to file\s
                     {
                         for (int i = framesNum-BUFFERSIZE+1; i < framesNum+1; i++)
                         {
                             CreateThumbnail(@"images\color"+i+".bmp", ConvertWriteableBitmapToBitmapImage(colorBitmap[i%BUFFERSIZE]));
+                            //AddBmpToAvi(@"images\video.avi", BitmapFromWriteableBitmap(colorBitmap[i % BUFFERSIZE]));
                         }
 
-                    }*/
+                    }
                      
                     // Copy the pixel data from the image to a temporary array
                     colorFrame.CopyPixelDataTo(this.colorPixels);
@@ -119,6 +121,37 @@ namespace Kinect_R_and_D.Record
             }
         }
 
+        private Bitmap BitmapFromWriteableBitmap(WriteableBitmap writeBmp)
+        {
+            System.Drawing.Bitmap bmp;
+            using (MemoryStream outStream = new MemoryStream())
+            {
+                BitmapEncoder enc = new BmpBitmapEncoder();
+                enc.Frames.Add(BitmapFrame.Create((BitmapSource)writeBmp));
+                enc.Save(outStream);
+                bmp = new System.Drawing.Bitmap(outStream);
+            }
+            return bmp;
+        }
+/*
+        private void AddBmpToAvi(string name,Bitmap image1)
+        {// instantiate AVI writer, use WMV3 codec
+            AVIWriter writer = new AVIWriter("wmv3");
+            // create new AVI file and open it
+            writer.Open("test.avi", 320, 240);
+            // create frame image
+            Bitmap image = new Bitmap(320, 240);
+
+            for (int i = 0; i < 240; i++)
+            {
+                // update image
+                image.SetPixel(i, i, System.Drawing.Color.Red);
+                // add the image as a new frame of video file
+                writer.AddFrame(image);
+            }
+            writer.Close();
+        }
+        */
         private BitmapImage ConvertWriteableBitmapToBitmapImage(WriteableBitmap wbm)
         {
             BitmapImage bmImage = new BitmapImage();
