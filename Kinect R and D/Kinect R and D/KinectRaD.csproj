@@ -36,11 +36,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AForge.Video">
-      <HintPath>Release\AForge.Video.dll</HintPath>
-    </Reference>
     <Reference Include="AForge.Video.VFW">
       <HintPath>.\AForge.Video.VFW.dll</HintPath>
+    </Reference>
+    <Reference Include="IPPrototyper, Version=1.0.1.1, Culture=neutral, PublicKeyToken=deedab63545c06c9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Release\IPPrototyper.exe</HintPath>
     </Reference>
     <Reference Include="Microsoft.Kinect, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Kinect.Toolkit">
@@ -124,49 +125,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Release\AForge.Controls.dll" />
-    <Resource Include="Release\AForge.Controls.xml" />
-    <Content Include="Release\AForge.DebuggerVisualizers %282010%29.dll" />
-    <Content Include="Release\AForge.dll" />
-    <Content Include="Release\AForge.Fuzzy.dll" />
-    <Resource Include="Release\AForge.Fuzzy.xml" />
-    <Content Include="Release\AForge.Genetic.dll" />
-    <Resource Include="Release\AForge.Genetic.xml" />
-    <Content Include="Release\AForge.Imaging.dll" />
-    <Content Include="Release\AForge.Imaging.Formats.dll" />
-    <Resource Include="Release\AForge.Imaging.Formats.xml" />
-    <Content Include="Release\AForge.Imaging.IPPrototyper.dll" />
-    <Resource Include="Release\AForge.Imaging.xml" />
-    <Content Include="Release\AForge.MachineLearning.dll" />
-    <Resource Include="Release\AForge.MachineLearning.xml" />
-    <Content Include="Release\AForge.Math.dll" />
-    <Resource Include="Release\AForge.Math.xml" />
-    <Content Include="Release\AForge.Neuro.dll" />
-    <Resource Include="Release\AForge.Neuro.xml" />
-    <Content Include="Release\AForge.Robotics.Lego.dll" />
-    <Resource Include="Release\AForge.Robotics.Lego.xml" />
-    <Content Include="Release\AForge.Robotics.Surveyor.dll" />
-    <Resource Include="Release\AForge.Robotics.Surveyor.xml" />
-    <Content Include="Release\AForge.Robotics.TeRK.dll" />
-    <Resource Include="Release\AForge.Robotics.TeRK.xml" />
-    <Content Include="Release\AForge.Video.DirectShow.dll" />
-    <Resource Include="Release\AForge.Video.DirectShow.xml" />
-    <Content Include="Release\AForge.Video.dll" />
-    <Content Include="Release\AForge.Video.FFMPEG.dll" />
-    <Resource Include="Release\AForge.Video.FFMPEG.xml" />
-    <Content Include="Release\AForge.Video.Kinect.dll" />
-    <Resource Include="Release\AForge.Video.Kinect.xml" />
-    <Content Include="Release\AForge.Video.VFW.dll" />
-    <Resource Include="Release\AForge.Video.VFW.xml" />
-    <Content Include="Release\AForge.Video.Ximea.dll" />
-    <Resource Include="Release\AForge.Video.Ximea.xml" />
-    <Resource Include="Release\AForge.Video.xml" />
-    <Content Include="Release\AForge.Vision.dll" />
-    <Resource Include="Release\AForge.Vision.xml" />
-    <Resource Include="Release\AForge.xml" />
-    <Content Include="Release\IPPrototyper.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
