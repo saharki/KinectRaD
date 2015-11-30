@@ -5,12 +5,15 @@
         Title="Project X" Height="600" Width="800">
     <Grid>
         <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
-        <k:KinectRegion Name="kinectRegion">
-            <Image x:Name="Image" Margin="422,30,34.6,296.4"/>
+        <Image x:Name="colorImage" Margin="422,36,62.6,280.4"/>
+
+        <Image x:Name="depthImage" Margin="43,36,441.6,280.4"/>
+        <k:KinectRegion k:Name="kinectRegion" Margin="326,261,158.6,75.4" >
+
         </k:KinectRegion>
+
         <k:KinectUserViewer VerticalAlignment="Center" HorizontalAlignment="Center" 
         k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="238" Margin="78,261,376.6,71.4" Width="339" RenderTransformOrigin="0.478,0.492" />
 
     </Grid>
 </Window>
- 
