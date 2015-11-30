@@ -60,7 +60,7 @@ namespace Kinect_R_and_D
             // Get Ready for Skeleton Ready Events.
             this.kinect.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(skeleonTracker.kinectSkeletonFrameReady);
             /* End Skeleton handling */
-
+             
             /* Color handling */
             this.colorDisplay = new ColorRecorder(kinect);
 

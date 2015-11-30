@@ -10,3 +10,4 @@ namespace Kinect_R_and_D.Record
         Skeletons = 4
     }
 }
+ 

@@ -11,7 +11,7 @@ using System.Timers;
 using Kinect_R_and_D.Record;
 
 namespace Kinect_R_and_D.Record
-{
+{ 
     class SkeletonPositionTracking
     {
         private const string filePath = @"JointPosition.csv";

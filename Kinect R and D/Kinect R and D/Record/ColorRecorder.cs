@@ -52,7 +52,7 @@ namespace Kinect_R_and_D.Record
                     {
                         for (int i = framesNum-BUFFERSIZE+1; i < framesNum+1; i++)
                         {
-                            CreateThumbnail(@"images\color"+i+".bmp", ConvertWriteableBitmapToBitmapImage(colorBitmap[i%BUFFERSIZE]));
+                          //  CreateThumbnail(@"images\color"+i+".bmp", ConvertWriteableBitmapToBitmapImage(colorBitmap[i%BUFFERSIZE]));
                             //AddBmpToAvi(@"images\video.avi", BitmapFromWriteableBitmap(colorBitmap[i % BUFFERSIZE]));
                         }
 
