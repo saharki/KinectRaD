@@ -24,7 +24,6 @@ namespace Kinect_R_and_D
         private const string fileName = "ColorVideo.wmv";
 
         private ColorRecorder colorDisplay;
-        private DepthRecoder depthDisplay;
 
 
         /// <summary>
@@ -51,50 +50,29 @@ namespace Kinect_R_and_D
             this.sensorChooser.Start();
             this.kinect = this.sensorChooser.Kinect;
 
-            /* Skeleton handling */
-
             // Allocate and start the skeleton Data stream.
             this.skeleonTracker = new SkeletonPositionTracking(kinect.SkeletonStream.FrameSkeletonArrayLength);
             this.kinect.SkeletonStream.Enable();
 
             // Get Ready for Skeleton Ready Events.
             this.kinect.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(skeleonTracker.kinectSkeletonFrameReady);
-            /* End Skeleton handling */
 
-            /* Color handling */
-            this.colorDisplay = new ColorRecorder(kinect);
+            this.colorDisplay = new ColorRecorder();
 
             // Turn on the color stream to receive color frames
             this.kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
 
+            // Allocate space to put the pixels we'll receive
+            colorDisplay.colorPixels = new byte[this.kinect.ColorStream.FramePixelDataLength];
+
+            // This is the bitmap we'll display on-screen
+            colorDisplay.colorBitmap = new WriteableBitmap(this.kinect.ColorStream.FrameWidth, this.kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+
             // Set the image we display to point to the bitmap where we'll put the image data
-            this.colorImage.Source = colorDisplay.ColorBitmap;
+            this.Image.Source = colorDisplay.colorBitmap;
 
             // Add an event handler to be called whenever there is new color frame data
             this.kinect.ColorFrameReady += this.colorDisplay.SensorColorFrameReady;
-            /* End of Color handling. */
-
-            /* Depth handling */
-            this.depthDisplay = new DepthRecoder();
-
-            // Turn on the depth stream to receive depth frames
-            this.kinect.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
-
-            // Allocate space to put the depth pixels we'll receive
-            depthDisplay.DepthPixels = new DepthImagePixel[this.kinect.DepthStream.FramePixelDataLength];
-
-            // Allocate space to put the color pixels we'll create
-            depthDisplay.ColorPixels = new byte[this.kinect.DepthStream.FramePixelDataLength * sizeof(int)];
-
-            // This is the bitmap we'll display on-screen
-            depthDisplay.ColorBitmap = new WriteableBitmap(this.kinect.DepthStream.FrameWidth, this.kinect.DepthStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
-
-            // Set the image we display to point to the bitmap where we'll put the image data
-            this.depthImage.Source = depthDisplay.ColorBitmap;
-
-            // Add an event handler to be called whenever there is new depth frame data
-            this.kinect.DepthFrameReady += depthDisplay.SensorDepthFrameReady;
-            /* End of Depth handling */
 
             this.kinect.Start();
         }
@@ -184,3 +162,4 @@ namespace Kinect_R_and_D
 
 
 }
+
