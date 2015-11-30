@@ -80,6 +80,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Record\DepthRecorder.cs" />
     <Compile Include="Record\KinectRecordOptions.cs" />
     <Compile Include="Record\ColorRecorder.cs" />
     <Compile Include="Record\SkeletonPositionTracking.cs" />
