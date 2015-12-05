@@ -60,12 +60,18 @@ namespace Kinect_R_and_D
             // Get Ready for Skeleton Ready Events.
             this.kinect.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(skeleonTracker.kinectSkeletonFrameReady);
             /* End Skeleton handling */
-             
+
             /* Color handling */
-            this.colorDisplay = new ColorRecorder(kinect);
+            this.colorDisplay = new ColorRecorder();
 
             // Turn on the color stream to receive color frames
             this.kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+
+            // Allocate space to put the pixels we'll receive
+            colorDisplay.ColorPixels = new byte[this.kinect.ColorStream.FramePixelDataLength];
+
+            // This is the bitmap we'll display on-screen
+            colorDisplay.ColorBitmap = new WriteableBitmap(this.kinect.ColorStream.FrameWidth, this.kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
 
             // Set the image we display to point to the bitmap where we'll put the image data
             this.colorImage.Source = colorDisplay.ColorBitmap;
@@ -184,3 +190,4 @@ namespace Kinect_R_and_D
 
 
 }
+

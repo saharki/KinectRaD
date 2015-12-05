@@ -11,17 +11,17 @@ using System.Timers;
 using Kinect_R_and_D.Record;
 
 namespace Kinect_R_and_D.Record
-{ 
+{
     class SkeletonPositionTracking
     {
-        private const string filePath = @"Step0.csv";
+        private const string filePath = @"JointPosition.csv";
         private string csvHeadline = "Head X, Head Y, Head Z, HandLeft X, HandLeft Y, HandLeft Z, WristLeft X, WristLeft Y," +
  "WristLeft Z, HandRight X, HandRight Y, HandRight Z, WristRight X, WristRight Y, WristRight Z" + System.Environment.NewLine;
         private Skeleton[] skeletonData;
         private string CSVFileRow;
         private int CSVFileRowCount; //To optimize the write operation. 
 
-        public SkeletonPositionTracking (int frameSkeletonArrayLength)
+        public SkeletonPositionTracking(int frameSkeletonArrayLength)
         {
             skeletonData = new Skeleton[frameSkeletonArrayLength];
             File.WriteAllText(filePath, csvHeadline);
