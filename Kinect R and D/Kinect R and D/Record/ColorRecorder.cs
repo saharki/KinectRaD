@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Drawing;
 using System.ComponentModel;
-using AForge.Video.VFW;
+
 
 namespace Kinect_R_and_D.Record
 {
